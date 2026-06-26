@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Asghar Ali – Accounts & Banking Operations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#0B1F3A;
+  --navy-mid:#122845;
+  --navy-light:#1A3560;
+  --gold:#C9A84C;
+  --gold-light:#E8C97A;
+  --gold-pale:#F5EDCC;
+  --ivory:#F8F4EC;
+  --ivory-dark:#EDE7D8;
+  --slate:#8A9BB5;
+  --slate-light:#B8C5D6;
+  --white:#FFFFFF;
+  --rule:rgba(201,168,76,0.3);
+  --rule-light:rgba(201,168,76,0.15);
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--navy);
+  color:var(--ivory);
+  font-family:'Inter',sans-serif;
+  overflow-x:hidden;
+  min-height:100vh;
+}
+
+/* ── PAGES ── */
+.page{display:none;min-height:100vh;animation:fadeIn 0.45s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── SCROLL PROGRESS ── */
+#prog{position:fixed;top:0;left:0;height:2px;width:0;background:var(--gold);z-index:2000;transition:width .1s linear}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  background:rgba(11,31,58,0.96);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--rule);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;height:60px;
+}
+.nav-brand{
+  font-family:'Playfair Display',serif;
+  font-size:18px;font-weight:700;color:var(--gold);
+  cursor:pointer;letter-spacing:0.5px;
+}
+.nav-brand span{color:var(--ivory);font-weight:400}
+.nav-links{display:flex;gap:6px}
+.nav-link{
+  background:none;border:none;color:var(--slate-light);
+  font-family:'Inter',sans-serif;font-size:12px;font-weight:500;
+  padding:6px 14px;border-radius:3px;cursor:pointer;
+  letter-spacing:0.8px;text-transform:uppercase;
+  transition:color .2s,background .2s;
+}
+.nav-link:hover{color:var(--gold);background:rgba(201,168,76,0.08)}
+.nav-link.active{color:var(--gold);background:rgba(201,168,76,0.12);border:1px solid var(--rule)}
+
+/* ── HOME PAGE ── */
+#home{
+  padding-top:60px;
+  background:
+    linear-gradient(to bottom, rgba(11,31,58,0) 60%, var(--navy) 100%),
+    var(--navy);
+}
+
+/* Ledger lines in background */
+.ledger-bg{
+  position:absolute;inset:0;pointer-events:none;overflow:hidden;opacity:0.06;
+}
+.ledger-bg::before{
+  content:'';position:absolute;inset:0;
+  background-image:repeating-linear-gradient(
+    to bottom,transparent,transparent 39px,var(--gold) 39px,var(--gold) 40px
+  );
+}
+
+/* Hero two-column ledger layout */
+.hero-wrap{
+  position:relative;max-width:1100px;margin:0 auto;
+  padding:100px 40px 60px;display:grid;
+  grid-template-columns:1fr 1px 1fr;gap:0;
+  min-height:calc(100vh - 60px);align-items:center;
+}
+.ledger-bg{position:absolute;inset:0}
+.hero-divider{background:var(--rule);width:1px;margin:60px 0}
+
+/* Left: Debit (personal identity) */
+.hero-left{padding-right:60px}
+.ledger-label{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  color:var(--gold);letter-spacing:3px;text-transform:uppercase;
+  margin-bottom:20px;display:flex;align-items:center;gap:10px;
+}
+.ledger-label::after{content:'';flex:1;height:1px;background:var(--rule)}
+.hero-name{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(38px,5vw,62px);font-weight:700;
+  color:var(--white);line-height:1.08;margin-bottom:16px;
+  letter-spacing:-0.5px;
+}
+.hero-name em{color:var(--gold);font-style:normal}
+.hero-role{
+  font-size:14px;font-weight:400;color:var(--slate-light);
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:28px;
+}
+.hero-bio{
+  font-size:15px;line-height:1.8;color:var(--slate-light);
+  max-width:400px;margin-bottom:40px;
+  border-left:2px solid var(--gold);padding-left:18px;
+}
+
+/* Right: Credit (career stats like a balance sheet) */
+.hero-right{padding-left:60px}
+.balance-sheet{width:100%}
+.bs-title{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  color:var(--gold);letter-spacing:3px;margin-bottom:20px;
+  text-transform:uppercase;
+}
+.bs-row{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:14px 0;border-bottom:1px solid var(--rule-light);
+  transition:background .2s;
+}
+.bs-row:hover{background:rgba(201,168,76,0.04);padding-left:8px;padding-right:8px;margin:0 -8px;border-radius:3px}
+.bs-label{font-size:13px;color:var(--slate-light);font-weight:400}
+.bs-value{
+  font-family:'IBM Plex Mono',monospace;font-size:18px;
+  font-weight:500;color:var(--gold-light);
+}
+.bs-total{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:20px 0 0;border-top:2px solid var(--gold);margin-top:4px;
+}
+.bs-total .bs-label{font-size:14px;font-weight:600;color:var(--ivory)}
+.bs-total .bs-value{font-size:24px;color:var(--gold)}
+
+/* Section cards on home */
+.sections-grid{
+  max-width:1100px;margin:0 auto;
+  padding:20px 40px 80px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:1px;background:var(--rule-light);
+  border:1px solid var(--rule-light);border-radius:4px;overflow:hidden;
+}
+.section-card{
+  background:var(--navy);padding:36px 32px;cursor:pointer;
+  transition:background .25s,transform .2s;position:relative;
+  overflow:hidden;
+}
+.section-card::before{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:var(--gold);transform:scaleX(0);transform-origin:left;
+  transition:transform .3s ease;
+}
+.section-card:hover{background:var(--navy-mid)}
+.section-card:hover::before{transform:scaleX(1)}
+.sc-num{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+  color:var(--gold);letter-spacing:2px;margin-bottom:16px;display:block;
+}
+.sc-title{
+  font-family:'Playfair Display',serif;font-size:22px;
+  font-weight:600;color:var(--white);margin-bottom:10px;
+}
+.sc-desc{font-size:13px;color:var(--slate);line-height:1.7}
+.sc-arrow{
+  position:absolute;bottom:28px;right:28px;
+  font-size:18px;color:var(--gold);opacity:0;
+  transition:opacity .2s,transform .2s;transform:translateX(-6px);
+}
+.section-card:hover .sc-arrow{opacity:1;transform:translateX(0)}
+
+/* ── INNER PAGES LAYOUT ── */
+.page-wrap{max-width:1000px;margin:0 auto;padding:100px 40px 80px}
+
+/* Page header */
+.page-header{
+  border-bottom:1px solid var(--rule);padding-bottom:32px;margin-bottom:52px;
+}
+.ph-back{
+  display:inline-flex;align-items:center;gap:8px;
+  background:none;border:1px solid var(--rule);
+  color:var(--gold);font-size:11px;letter-spacing:2px;
+  text-transform:uppercase;font-family:'IBM Plex Mono',monospace;
+  padding:7px 16px;border-radius:2px;cursor:pointer;
+  margin-bottom:28px;transition:background .2s,color .2s;
+}
+.ph-back:hover{background:rgba(201,168,76,0.1)}
+.ph-eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  color:var(--gold);letter-spacing:4px;text-transform:uppercase;margin-bottom:12px;
+}
+.ph-title{
+  font-family:'Playfair Display',serif;font-size:clamp(30px,5vw,48px);
+  font-weight:700;color:var(--white);margin-bottom:16px;
+}
+.ph-subtitle{font-size:15px;color:var(--slate-light);line-height:1.7;max-width:600px}
+
+/* ── ABOUT PAGE ── */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+.about-block{margin-bottom:40px}
+.ab-label{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  color:var(--gold);letter-spacing:3px;text-transform:uppercase;
+  margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--rule);
+  display:block;
+}
+.ab-text{font-size:14px;line-height:1.85;color:var(--slate-light)}
+.profile-card{
+  background:var(--navy-mid);border:1px solid var(--rule);
+  border-radius:4px;padding:32px;
+}
+.pc-avatar{
+  width:72px;height:72px;border-radius:50%;background:var(--navy-light);
+  border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-size:24px;font-weight:700;
+  color:var(--gold);margin-bottom:20px;
+}
+.pc-name{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--white);margin-bottom:4px}
+.pc-role{font-size:12px;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:24px}
+.pc-detail{
+  display:flex;align-items:flex-start;gap:12px;
+  font-size:13px;color:var(--slate-light);padding:10px 0;
+  border-bottom:1px solid var(--rule-light);
+}
+.pc-detail:last-child{border-bottom:none}
+.pc-icon{color:var(--gold);font-size:14px;margin-top:1px;min-width:16px}
+.cert-list-page{list-style:none;margin-top:20px}
+.cert-list-page li{
+  padding:12px 16px;border-left:2px solid var(--gold);
+  background:rgba(201,168,76,0.05);margin-bottom:8px;
+  font-size:13px;color:var(--ivory);border-radius:0 3px 3px 0;
+}
+
+/* ── EXPERIENCE PAGE ── */
+.timeline{position:relative;padding-left:40px}
+.timeline::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:1px;background:var(--rule);
+}
+.tl-entry{position:relative;margin-bottom:52px}
+.tl-dot{
+  position:absolute;left:-47px;top:4px;width:14px;height:14px;
+  border-radius:50%;background:var(--gold);border:2px solid var(--navy);
+  box-shadow:0 0 0 3px rgba(201,168,76,0.25);
+}
+.tl-period{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+  color:var(--gold);letter-spacing:2px;margin-bottom:12px;
+  display:block;
+}
+.tl-company{
+  font-family:'Playfair Display',serif;font-size:22px;
+  font-weight:600;color:var(--white);margin-bottom:4px;
+}
+.tl-role{font-size:13px;color:var(--slate-light);letter-spacing:1px;margin-bottom:20px;text-transform:uppercase}
+.tl-duties{list-style:none}
+.tl-duties li{
+  padding:10px 0;border-bottom:1px solid var(--rule-light);
+  font-size:14px;color:var(--slate-light);line-height:1.7;
+  display:flex;gap:12px;align-items:flex-start;
+}
+.tl-duties li::before{
+  content:'→';color:var(--gold);font-size:12px;
+  margin-top:3px;flex-shrink:0;font-family:'IBM Plex Mono',monospace;
+}
+.tl-tag{
+  display:inline-block;background:rgba(201,168,76,0.1);
+  border:1px solid var(--rule);color:var(--gold-light);
+  font-size:11px;padding:3px 10px;border-radius:2px;margin-top:12px;
+  font-family:'IBM Plex Mono',monospace;letter-spacing:1px;
+}
+
+/* ── SKILLS PAGE ── */
+.skills-cols{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.skill-section{margin-bottom:40px}
+.skill-section-title{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  color:var(--gold);letter-spacing:3px;text-transform:uppercase;
+  margin-bottom:24px;padding-bottom:10px;border-bottom:1px solid var(--rule);
+}
+.skill-row{
+  display:flex;align-items:center;gap:16px;
+  padding:12px 0;border-bottom:1px solid var(--rule-light);
+}
+.skill-name{font-size:13px;color:var(--ivory);flex:1;font-weight:400}
+.skill-bar-wrap{width:140px;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden}
+.skill-bar-fill{height:100%;border-radius:2px;width:0;background:var(--gold);transition:width 1.2s cubic-bezier(0.4,0,0.2,1)}
+.skill-pct{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+  color:var(--gold);min-width:32px;text-align:right;
+}
+.competency-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+.comp-pill{
+  background:rgba(201,168,76,0.07);border:1px solid var(--rule);
+  color:var(--slate-light);font-size:12px;padding:10px 14px;
+  border-radius:3px;line-height:1.4;transition:background .2s,color .2s;
+}
+.comp-pill:hover{background:rgba(201,168,76,0.14);color:var(--gold-light)}
+.lang-row{
+  display:flex;align-items:center;gap:16px;
+  padding:14px 0;border-bottom:1px solid var(--rule-light);
+}
+.lang-name{font-size:13px;color:var(--ivory);flex:1}
+.lang-level{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gold)}
+
+/* ── CONTACT PAGE ── */
+.contact-layout{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+.contact-item{
+  padding:28px 0;border-bottom:1px solid var(--rule-light);
+  display:flex;align-items:flex-start;gap:20px;
+}
+.ci-icon{
+  width:40px;height:40px;background:rgba(201,168,76,0.1);
+  border:1px solid var(--rule);border-radius:3px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+}
+.ci-label{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;
+}
+.ci-value{font-size:14px;color:var(--ivory);font-weight:500}
+.ci-value a{color:var(--gold-light);text-decoration:none}
+.ci-value a:hover{text-decoration:underline}
+.open-box{
+  background:var(--navy-mid);border:1px solid var(--rule);
+  border-radius:4px;padding:36px;margin-top:40px;
+}
+.ob-title{
+  font-family:'Playfair Display',serif;font-size:24px;
+  font-weight:600;color:var(--white);margin-bottom:12px;
+}
+.ob-text{font-size:14px;color:var(--slate-light);line-height:1.8;margin-bottom:28px}
+.ob-cta{
+  display:inline-block;background:var(--gold);color:var(--navy);
+  font-size:12px;font-weight:600;padding:12px 28px;border-radius:2px;
+  text-decoration:none;letter-spacing:1.5px;text-transform:uppercase;
+  font-family:'IBM Plex Mono',monospace;
+  transition:background .2s,transform .15s;
+}
+.ob-cta:hover{background:var(--gold-light);transform:translateY(-2px)}
+
+/* ── FOOTER ── */
+.site-footer{
+  border-top:1px solid var(--rule);text-align:center;
+  padding:28px 40px;font-family:'IBM Plex Mono',monospace;
+  font-size:11px;color:var(--slate);letter-spacing:1.5px;
+  position:relative;z-index:1;
+}
+
+/* ── REVEAL ANIMATION ── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:none}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  nav{padding:0 20px}
+  .nav-link{padding:5px 9px;font-size:11px}
+  .hero-wrap{grid-template-columns:1fr;gap:40px;padding:80px 24px 40px}
+  .hero-divider{display:none}
+  .hero-left,.hero-right{padding:0}
+  .sections-grid{padding:20px 24px 60px;grid-template-columns:1fr}
+  .page-wrap{padding:80px 20px 60px}
+  .about-grid,.skills-cols,.contact-layout{grid-template-columns:1fr}
+  .competency-grid{grid-template-columns:1fr}
+  .timeline{padding-left:28px}
+  .tl-dot{left:-35px}
+}
+</style>
+</head>
+<body>
+
+<div id="prog"></div>
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav>
+  <div class="nav-brand" onclick="showPage('home')">Asghar <span>Ali</span></div>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="showPage('home')">Home</button>
+    <button class="nav-link" onclick="showPage('about')">About</button>
+    <button class="nav-link" onclick="showPage('experience')">Experience</button>
+    <button class="nav-link" onclick="showPage('skills')">Skills</button>
+    <button class="nav-link" onclick="showPage('contact')">Contact</button>
+  </div>
+</nav>
+
+<!-- ═══════════════ HOME PAGE ═══════════════ -->
+<div id="home" class="page active">
+
+  <!-- Hero ledger layout -->
+  <div style="position:relative;overflow:hidden">
+    <div class="ledger-bg"></div>
+    <div class="hero-wrap">
+      <!-- LEFT: Identity -->
+      <div class="hero-left">
+        <div class="ledger-label">Professional Profile</div>
+        <h1 class="hero-name">
+          Asghar<br><em>Ali</em>
+        </h1>
+        <p class="hero-role">Accounts &amp; Banking Operations</p>
+        <p class="hero-bio">
+          Detail-oriented financial professional with 8+ years across construction,
+          shipping, government services, and banking sectors in the UAE &amp; Pakistan.
+          Specialist in KYC/AML compliance, reconciliations, and financial reporting.
+        </p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button class="ob-cta" style="font-size:11px;padding:11px 24px" onclick="showPage('experience')">View Experience</button>
+          <button class="ob-cta" style="background:transparent;color:var(--gold);border:1px solid var(--rule);font-size:11px;padding:11px 24px" onclick="showPage('contact')">Contact Me</button>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="hero-divider"></div>
+
+      <!-- RIGHT: Balance Sheet Stats -->
+      <div class="hero-right">
+        <div class="bs-title">Career Balance Sheet</div>
+        <div class="balance-sheet">
+          <div class="bs-row">
+            <span class="bs-label">Years of Experience</span>
+            <span class="bs-value">08+</span>
+          </div>
+          <div class="bs-row">
+            <span class="bs-label">Companies Served</span>
+            <span class="bs-value">04</span>
+          </div>
+          <div class="bs-row">
+            <span class="bs-label">Sectors Covered</span>
+            <span class="bs-value">04</span>
+          </div>
+          <div class="bs-row">
+            <span class="bs-label">Countries Active</span>
+            <span class="bs-value">02</span>
+          </div>
+          <div class="bs-row">
+            <span class="bs-label">Compliance Frameworks</span>
+            <span class="bs-value">AML / KYC / CTF</span>
+          </div>
+          <div class="bs-row">
+            <span class="bs-label">Current Location</span>
+            <span class="bs-value" style="font-size:13px">Dubai, UAE</span>
+          </div>
+          <div class="bs-total">
+            <span class="bs-label">Status</span>
+            <span class="bs-value" style="font-size:14px;color:var(--gold)">OPEN TO HIRE</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section navigation cards -->
+  <div class="sections-grid">
+    <div class="section-card" onclick="showPage('about')">
+      <span class="sc-num">01</span>
+      <div class="sc-title">About</div>
+      <p class="sc-desc">Professional profile, education, personal background and certifications.</p>
+      <span class="sc-arrow">→</span>
+    </div>
+    <div class="section-card" onclick="showPage('experience')">
+      <span class="sc-num">02</span>
+      <div class="sc-title">Experience</div>
+      <p class="sc-desc">Full career timeline across banking, shipping, government, and construction sectors.</p>
+      <span class="sc-arrow">→</span>
+    </div>
+    <div class="section-card" onclick="showPage('skills')">
+      <span class="sc-num">03</span>
+      <div class="sc-title">Skills</div>
+      <p class="sc-desc">Technical accounting proficiencies, compliance expertise, and core competencies.</p>
+      <span class="sc-arrow">→</span>
+    </div>
+    <div class="section-card" onclick="showPage('contact')">
+      <span class="sc-num">04</span>
+      <div class="sc-title">Contact</div>
+      <p class="sc-desc">Reach out for opportunities, references, or professional collaboration.</p>
+      <span class="sc-arrow">→</span>
+    </div>
+  </div>
+
+  <footer class="site-footer">© 2025 &nbsp;·&nbsp; ASGHAR ALI &nbsp;·&nbsp; ACCOUNTS & BANKING OPERATIONS &nbsp;·&nbsp; DUBAI, UAE</footer>
+</div>
+
+<!-- ═══════════════ ABOUT PAGE ═══════════════ -->
+<div id="about" class="page">
+  <div class="page-wrap">
+    <div class="page-header">
+      <button class="ph-back" onclick="showPage('home')">← Back</button>
+      <p class="ph-eyebrow">01 / Profile</p>
+      <h1 class="ph-title">About Me</h1>
+      <p class="ph-subtitle">
+        A seasoned accounts and banking operations professional bringing precision,
+        integrity, and cross-sector expertise to every financial challenge.
+      </p>
+    </div>
+
+    <div class="about-grid">
+      <!-- Left col -->
+      <div>
+        <div class="about-block reveal">
+          <span class="ab-label">Professional Summary</span>
+          <p class="ab-text">
+            Highly motivated and detail-oriented Accounts &amp; Banking Operations professional
+            with proven experience in financial accounting, account opening, customer onboarding,
+            KYC/AML compliance, transaction processing, reconciliations, and operational support.
+          </p>
+          <br>
+          <p class="ab-text">
+            Skilled in managing financial records, preparing reports, handling banking operations,
+            and ensuring compliance with regulatory requirements across the UAE and Pakistan.
+            Adept at coordinating with auditors, tax consultants, and government regulatory authorities.
+          </p>
+        </div>
+
+        <div class="about-block reveal" style="transition-delay:.1s">
+          <span class="ab-label">Education</span>
+          <div style="padding:20px;background:rgba(201,168,76,0.06);border:1px solid var(--rule);border-radius:3px">
+            <p style="font-family:'Playfair Display',serif;font-size:20px;color:var(--white);margin-bottom:4px">Bachelor's Degree</p>
+            <p style="font-size:13px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">SALU University, Pakistan</p>
+            <p style="font-size:13px;color:var(--slate)">Foundation in commerce, accounting principles, and business administration.</p>
+          </div>
+        </div>
+
+        <div class="about-block reveal" style="transition-delay:.2s">
+          <span class="ab-label">Certifications &amp; Training</span>
+          <ul class="cert-list-page">
+            <li>📋 Professional Behavior Training</li>
+            <li>🤝 Negotiation Skills Training</li>
+            <li>🎯 Basic Customer Care Training</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Right col -->
+      <div>
+        <div class="profile-card reveal" style="transition-delay:.05s;margin-bottom:28px">
+          <div class="pc-avatar">AA</div>
+          <p class="pc-name">Asghar Ali</p>
+          <p class="pc-role">Accounts &amp; Banking Operations</p>
+          <div class="pc-detail">
+            <span class="pc-icon">📞</span>
+            <a href="tel:+971504712260" style="color:var(--gold-light);text-decoration:none">+971-50-4712260</a>
+          </div>
+          <div class="pc-detail">
+            <span class="pc-icon">✉️</span>
+            <a href="mailto:asgharmirani8@gmail.com" style="color:var(--gold-light);text-decoration:none;font-size:13px">asgharmirani8@gmail.com</a>
+          </div>
+          <div class="pc-detail">
+            <span class="pc-icon">📍</span>
+            <span>Al Nahda 1, Dubai, UAE</span>
+          </div>
+          <div class="pc-detail">
+            <span class="pc-icon">🌐</span>
+            <span>English &amp; Urdu</span>
+          </div>
+        </div>
+
+        <div class="reveal" style="transition-delay:.15s;background:var(--navy-mid);border:1px solid var(--rule);border-radius:4px;padding:24px">
+          <span class="ab-label" style="margin-bottom:12px">Sectors Worked In</span>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="background:rgba(201,168,76,0.07);border:1px solid var(--rule);padding:14px;border-radius:3px;text-align:center">
+              <div style="font-size:22px;margin-bottom:6px">🏗️</div>
+              <div style="font-size:12px;color:var(--ivory)">Construction</div>
+            </div>
+            <div style="background:rgba(201,168,76,0.07);border:1px solid var(--rule);padding:14px;border-radius:3px;text-align:center">
+              <div style="font-size:22px;margin-bottom:6px">🚢</div>
+              <div style="font-size:12px;color:var(--ivory)">Shipping</div>
+            </div>
+            <div style="background:rgba(201,168,76,0.07);border:1px solid var(--rule);padding:14px;border-radius:3px;text-align:center">
+              <div style="font-size:22px;margin-bottom:6px">🏛️</div>
+              <div style="font-size:12px;color:var(--ivory)">Government</div>
+            </div>
+            <div style="background:rgba(201,168,76,0.07);border:1px solid var(--rule);padding:14px;border-radius:3px;text-align:center">
+              <div style="font-size:22px;margin-bottom:6px">🏦</div>
+              <div style="font-size:12px;color:var(--ivory)">Banking</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="site-footer">© 2025 &nbsp;·&nbsp; ASGHAR ALI &nbsp;·&nbsp; DUBAI, UAE</footer>
+</div>
+
+<!-- ═══════════════ EXPERIENCE PAGE ═══════════════ -->
+<div id="experience" class="page">
+  <div class="page-wrap">
+    <div class="page-header">
+      <button class="ph-back" onclick="showPage('home')">← Back</button>
+      <p class="ph-eyebrow">02 / Career</p>
+      <h1 class="ph-title">Work Experience</h1>
+      <p class="ph-subtitle">
+        Eight years of progressive responsibility across four organizations spanning
+        the UAE and Pakistan — from banking compliance to maritime accounting.
+      </p>
+    </div>
+
+    <div class="timeline">
+
+      <div class="tl-entry reveal">
+        <div class="tl-dot"></div>
+        <span class="tl-period">MAR 2025 – PRESENT</span>
+        <p class="tl-company">Black Swan Constructions Contracting LLC</p>
+        <p class="tl-role">Accounts &amp; Operations · Dubai, UAE</p>
+        <ul class="tl-duties">
+          <li>Maintain accurate financial records and bookkeeping across multiple cost centers</li>
+          <li>Process invoices, payments, receipts, and expense claims for construction projects</li>
+          <li>Reconcile bank statements and company accounts on a daily and monthly basis</li>
+          <li>Prepare monthly, quarterly, and annual financial reports for management review</li>
+          <li>Monitor accounts payable and accounts receivable, following up on outstanding balances</li>
+          <li>Assist with budgeting and cash flow management for active project sites</li>
+          <li>Coordinate with auditors, tax consultants, and regulatory authorities</li>
+          <li>Ensure compliance with accounting standards and company policies</li>
+          <li>Oversee daily operational activities and coordinate with internal departments and vendors</li>
+          <li>Support process improvement initiatives to increase operational efficiency</li>
+        </ul>
+        <span class="tl-tag">CURRENT ROLE</span>
+      </div>
+
+      <div class="tl-entry reveal" style="transition-delay:.1s">
+        <div class="tl-dot" style="background:var(--slate-light)"></div>
+        <span class="tl-period">2022 – 2024</span>
+        <p class="tl-company">Axcel Sea Shipping Co. LLC</p>
+        <p class="tl-role">Accountant · Dubai, UAE</p>
+        <ul class="tl-duties">
+          <li>Maintained accurate accounting records in accordance with company policies and maritime standards</li>
+          <li>Recorded and reconciled daily financial transactions including freight and charter hire income</li>
+          <li>Prepared monthly, quarterly, and annual financial statements for management</li>
+          <li>Monitored accounts payable and receivable across multiple vessel voyages</li>
+          <li>Processed supplier invoices including port charges, bunker costs, and agency fees</li>
+          <li>Verified and processed vessel operating expenses and maritime-related costs</li>
+          <li>Reconciled voyage accounts and vessel expense reports</li>
+          <li>Performed bank reconciliations and cash flow monitoring</li>
+          <li>Assisted in budgeting and financial forecasting for the shipping fleet</li>
+        </ul>
+        <span class="tl-tag">MARITIME SECTOR</span>
+      </div>
+
+      <div class="tl-entry reveal" style="transition-delay:.2s">
+        <div class="tl-dot" style="background:var(--slate-light)"></div>
+        <span class="tl-period">2018 – 2022</span>
+        <p class="tl-company">Amer Govt. Service Center</p>
+        <p class="tl-role">Accountant · Dubai, UAE</p>
+        <ul class="tl-duties">
+          <li>Maintained accurate books of accounts and financial records for government service transactions</li>
+          <li>Recorded daily transactions including journal entries, receipts, and payments</li>
+          <li>Prepared monthly financial statements and management reports</li>
+          <li>Reconciled daily collections from visa, immigration, and government service transactions</li>
+          <li>Verified customer payments received through cash, card, bank transfer, and online channels</li>
+          <li>Monitored government fee collections and ensured timely remittances</li>
+          <li>Ensured accurate recording of service revenues and commissions</li>
+          <li>Investigated and resolved transaction discrepancies across all payment channels</li>
+        </ul>
+        <span class="tl-tag">GOVERNMENT SERVICES</span>
+      </div>
+
+      <div class="tl-entry reveal" style="transition-delay:.3s">
+        <div class="tl-dot" style="background:var(--slate-light)"></div>
+        <span class="tl-period">2017 – 2018</span>
+        <p class="tl-company">Bank al Habib Limited</p>
+        <p class="tl-role">Account Opening Officer – Grade III · Pakistan</p>
+        <ul class="tl-duties">
+          <li>Assisted customers with opening savings, current, business, and other bank accounts</li>
+          <li>Explained account features, requirements, charges, and banking services to customers</li>
+          <li>Verified customer identity and supporting documents in line with SBP regulations</li>
+          <li>Conducted Know Your Customer (KYC) and Customer Due Diligence (CDD) checks</li>
+          <li>Screened customers against applicable sanction and watch lists</li>
+          <li>Ensured compliance with Anti-Money Laundering (AML) and Counter-Terrorism Financing (CTF) requirements</li>
+          <li>Maintained accurate records of new accounts and customer files</li>
+          <li>Coordinated with branch operations and compliance teams</li>
+          <li>Generated reports related to account opening activities</li>
+          <li>Supported branch operations during audits and inspections</li>
+        </ul>
+        <span class="tl-tag">BANKING &amp; COMPLIANCE</span>
+      </div>
+
+    </div>
+  </div>
+  <footer class="site-footer">© 2025 &nbsp;·&nbsp; ASGHAR ALI &nbsp;·&nbsp; DUBAI, UAE</footer>
+</div>
+
+<!-- ═══════════════ SKILLS PAGE ═══════════════ -->
+<div id="skills" class="page">
+  <div class="page-wrap">
+    <div class="page-header">
+      <button class="ph-back" onclick="showPage('home')">← Back</button>
+      <p class="ph-eyebrow">03 / Capabilities</p>
+      <h1 class="ph-title">Skills &amp; Expertise</h1>
+      <p class="ph-subtitle">
+        Technical accounting mastery, regulatory compliance knowledge, and the
+        interpersonal skills that make finance teams run smoothly.
+      </p>
+    </div>
+
+    <div class="skills-cols">
+      <!-- Left -->
+      <div>
+        <div class="skill-section reveal">
+          <div class="skill-section-title">Technical Proficiency</div>
+          <div class="skill-row">
+            <span class="skill-name">Financial Accounting</span>
+            <div class="skill-bar-wrap"><div class="skill-bar-fill" data-level="95"></div></div>
+            <span class="skill-pct">95%</span>
+          </div>
+          <div class="skill-row">
+            <span class="skill-name">Bank Reconciliation</span>
+            <div class="skill-bar-wrap"><div class="skill-bar-fill" data-level="92"></div></div>
+            <span class="skill-pct">92%</span>
+          </div>
+          <div class="skill-row">
+            <span class="skill-name">KYC / AML Compliance</span>
+            <div class="skill-bar-wrap"><div class="skill-bar-fill" data-level="90"></div></div>
+            <span class="skill-pct">90%</span>
+          </div>
+          <div class="skill-row">
+            <span class="skill-name">Financial Reporting</span>
+            <div class="skill-bar-wrap"><div class="skill-bar-fill" data-level="90"></div></div>
+            <span class="skill-pct">90%</span>
+          </div>
+          <div class="skill-row">
+            <span class="skill-name">Accounts Payable/Receivable</span>
+            <div class="skill-bar-wrap"><div class="skill-bar-fill" data-level="88"></div></div>
+            <span class="skill-pct">88%</span>
+          </div>
+          <div class="skill-row">
+            <span class="skill-name">Government Services Accounting</span>
+            <div class="skill-bar-wrap"><div class="skill-bar-fill" data-level="88"></div></div>
+            <span class="skill-pct">88%</span>
+          </div>
+          <div class="skill-row">
+            <span class="skill-name">Cash Flow Management</span>
+            <div class="skill-bar-wrap"><div class="skill-bar-fill" data-level="85"></div></div>
+            <span class="skill-pct">85%</span>
+          </div>
+          <div class="skill-row">
+            <span class="skill-name">Budgeting &amp; Forecasting</span>
+            <div class="skill-bar-wrap"><div class="skill-bar-fill" data-level="82"></div></div>
+            <span class="skill-pct">82%</span>
+          </div>
+        </div>
+
+        <div class="skill-section reveal" style="transition-delay:.1s">
+          <div class="skill-section-title">Languages</div>
+          <div class="lang-row">
+            <span class="lang-name">English</span>
+            <span class="lang-level">PROFESSIONAL WORKING</span>
+          </div>
+          <div class="lang-row">
+            <span class="lang-name">Urdu</span>
+            <span class="lang-level">NATIVE / FULL PROFICIENCY</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right -->
+      <div>
+        <div class="skill-section reveal" style="transition-delay:.15s">
+          <div class="skill-section-title">Compliance &amp; Regulatory</div>
+          <div class="competency-grid">
+            <div class="comp-pill">AML – Anti-Money Laundering</div>
+            <div class="comp-pill">KYC – Know Your Customer</div>
+            <div class="comp-pill">CTF – Counter-Terrorism Financing</div>
+            <div class="comp-pill">CDD – Customer Due Diligence</div>
+            <div class="comp-pill">SBP Regulatory Compliance</div>
+            <div class="comp-pill">Sanctions &amp; Watchlist Screening</div>
+            <div class="comp-pill">Audit Support &amp; Inspection</div>
+            <div class="comp-pill">IFRS Standards Awareness</div>
+          </div>
+        </div>
+
+        <div class="skill-section reveal" style="transition-delay:.2s;margin-top:32px">
+          <div class="skill-section-title">Core Competencies</div>
+          <div class="competency-grid">
+            <div class="comp-pill">Problem Solving &amp; Conflict Resolution</div>
+            <div class="comp-pill">Relationship Building with Authorities</div>
+            <div class="comp-pill">Time Management &amp; Deadline Compliance</div>
+            <div class="comp-pill">Bilingual Communication</div>
+            <div class="comp-pill">Professional Negotiation</div>
+            <div class="comp-pill">Vendor &amp; Stakeholder Management</div>
+            <div class="comp-pill">Process Improvement</div>
+            <div class="comp-pill">Cross-departmental Coordination</div>
+          </div>
+        </div>
+
+        <div class="reveal" style="transition-delay:.25s;margin-top:32px;background:rgba(201,168,76,0.06);border:1px solid var(--rule);border-radius:4px;padding:24px">
+          <div class="skill-section-title" style="margin-bottom:16px">Industry Sectors</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--rule-light);padding-bottom:10px">
+              <span style="font-size:13px;color:var(--ivory)">🏗️ Construction Contracting</span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gold)">2025–Now</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--rule-light);padding-bottom:10px">
+              <span style="font-size:13px;color:var(--ivory)">🚢 Maritime &amp; Shipping</span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gold)">2022–2024</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--rule-light);padding-bottom:10px">
+              <span style="font-size:13px;color:var(--ivory)">🏛️ Government Services</span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gold)">2018–2022</span>
+            </div>
+            <div style="display:flex;justify-content:space-between">
+              <span style="font-size:13px;color:var(--ivory)">🏦 Commercial Banking</span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gold)">2017–2018</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="site-footer">© 2025 &nbsp;·&nbsp; ASGHAR ALI &nbsp;·&nbsp; DUBAI, UAE</footer>
+</div>
+
+<!-- ═══════════════ CONTACT PAGE ═══════════════ -->
+<div id="contact" class="page">
+  <div class="page-wrap">
+    <div class="page-header">
+      <button class="ph-back" onclick="showPage('home')">← Back</button>
+      <p class="ph-eyebrow">04 / Connect</p>
+      <h1 class="ph-title">Get in Touch</h1>
+      <p class="ph-subtitle">
+        Available for senior accounting, banking operations, and financial management
+        roles across the UAE. Reach out through any of the channels below.
+      </p>
+    </div>
+
+    <div class="contact-layout">
+      <div>
+        <div class="contact-item reveal">
+          <div class="ci-icon">📞</div>
+          <div>
+            <p class="ci-label">Phone / WhatsApp</p>
+            <p class="ci-value"><a href="tel:+971504712260">+971-50-4712260</a></p>
+          </div>
+        </div>
+        <div class="contact-item reveal" style="transition-delay:.08s">
+          <div class="ci-icon">✉️</div>
+          <div>
+            <p class="ci-label">Email Address</p>
+            <p class="ci-value"><a href="mailto:asgharmirani8@gmail.com">asgharmirani8@gmail.com</a></p>
+          </div>
+        </div>
+        <div class="contact-item reveal" style="transition-delay:.16s">
+          <div class="ci-icon">📍</div>
+          <div>
+            <p class="ci-label">Current Location</p>
+            <p class="ci-value">Al Nahda 1, Dubai, UAE</p>
+          </div>
+        </div>
+        <div class="contact-item reveal" style="transition-delay:.24s">
+          <div class="ci-icon">🕐</div>
+          <div>
+            <p class="ci-label">Availability</p>
+            <p class="ci-value">Immediate / Notice Period Negotiable</p>
+          </div>
+        </div>
+        <div class="contact-item reveal" style="transition-delay:.32s">
+          <div class="ci-icon">🌐</div>
+          <div>
+            <p class="ci-label">Languages</p>
+            <p class="ci-value">English (Professional) · Urdu (Native)</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="open-box reveal" style="transition-delay:.1s">
+          <p class="ob-title">Open to New Opportunities</p>
+          <p class="ob-text">
+            I am actively seeking senior roles in financial accounting, banking operations,
+            KYC/AML compliance, and accounts management within the UAE. I bring cross-sector
+            experience, strong attention to regulatory compliance, and a track record of
+            accurate financial stewardship across diverse industries.
+          </p>
+          <a href="mailto:asgharmirani8@gmail.com" class="ob-cta">Send an Email →</a>
+        </div>
+
+        <div class="reveal" style="transition-delay:.2s;margin-top:24px;background:rgba(201,168,76,0.06);border:1px solid var(--rule);border-radius:4px;padding:24px">
+          <span class="ab-label" style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:3px;text-transform:uppercase;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--rule)">Areas of Interest</span>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;gap:12px;align-items:center;font-size:13px;color:var(--slate-light)">
+              <span style="color:var(--gold)">→</span> Senior Accountant / Finance Manager
+            </div>
+            <div style="display:flex;gap:12px;align-items:center;font-size:13px;color:var(--slate-light)">
+              <span style="color:var(--gold)">→</span> Banking Operations Specialist
+            </div>
+            <div style="display:flex;gap:12px;align-items:center;font-size:13px;color:var(--slate-light)">
+              <span style="color:var(--gold)">→</span> KYC / AML Compliance Officer
+            </div>
+            <div style="display:flex;gap:12px;align-items:center;font-size:13px;color:var(--slate-light)">
+              <span style="color:var(--gold)">→</span> Accounts &amp; Operations Lead
+            </div>
+            <div style="display:flex;gap:12px;align-items:center;font-size:13px;color:var(--slate-light)">
+              <span style="color:var(--gold)">→</span> Financial Controller (SME / Corporate)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="site-footer">© 2025 &nbsp;·&nbsp; ASGHAR ALI &nbsp;·&nbsp; DUBAI, UAE</footer>
+</div>
+
+<script>
+// ── Page navigation
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach((btn,i)=>{
+    const ids=['home','about','experience','skills','contact'];
+    btn.classList.toggle('active',ids[i]===id);
+  });
+  window.scrollTo({top:0,behavior:'instant'});
+  // Trigger reveals on new page
+  setTimeout(triggerReveals,80);
+  // Trigger skill bars on skills page
+  if(id==='skills')setTimeout(animateBars,200);
+}
+
+// ── Scroll progress
+window.addEventListener('scroll',()=>{
+  const st=window.scrollY;
+  const dh=document.documentElement.scrollHeight-window.innerHeight;
+  if(dh>0)document.getElementById('prog').style.width=(st/dh*100)+'%';
+});
+
+// ── Reveal on scroll
+function triggerReveals(){
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}});
+  },{threshold:0.12});
+  document.querySelectorAll('.active .reveal').forEach(el=>{
+    el.classList.remove('visible');
+    io.observe(el);
+  });
+  // Immediately show anything above fold
+  document.querySelectorAll('.active .reveal').forEach(el=>{
+    const r=el.getBoundingClientRect();
+    if(r.top<window.innerHeight)el.classList.add('visible');
+  });
+}
+
+// ── Animate skill bars
+function animateBars(){
+  document.querySelectorAll('.active .skill-bar-fill').forEach(bar=>{
+    if(!bar.dataset.done){
+      bar.dataset.done='1';
+      bar.style.width=bar.dataset.level+'%';
+    }
+  });
+}
+
+// ── 3D tilt on section cards
+document.querySelectorAll('.section-card').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width-.5;
+    const y=(e.clientY-r.top)/r.height-.5;
+    card.style.transform=`perspective(600px) rotateX(${y*-6}deg) rotateY(${x*6}deg)`;
+  });
+  card.addEventListener('mouseleave',()=>{
+    card.style.transform='perspective(600px) rotateX(0) rotateY(0)';
+    card.style.transition='transform 0.4s ease';
+    setTimeout(()=>card.style.transition='',400);
+  });
+});
+
+// Animate balance-sheet rows on load
+setTimeout(()=>{
+  document.querySelectorAll('.bs-row,.bs-total').forEach((row,i)=>{
+    row.style.opacity='0';row.style.transform='translateX(16px)';
+    setTimeout(()=>{
+      row.style.transition='opacity .45s ease,transform .45s ease';
+      row.style.opacity='1';row.style.transform='none';
+    },400+i*90);
+  });
+},100);
+
+// Init page
+triggerReveals();
+</script>
+</body>
+</html>
